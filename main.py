@@ -6,8 +6,8 @@ def parse_input(path):
     cities = []
     with open(path, "r") as file:
         for line in file:
-            suradnice = line.strip("()\n").split(", ")  # odignoruje () a rozdeli
-            cities.append(list(map(int, suradnice)))
+            suradnice = line.strip("").split()  # odignoruje () a rozdeli
+            cities.append(list(map(float, suradnice)))
     return cities
 
 
@@ -18,5 +18,5 @@ if __name__ == "__main__":
     end = timeit.default_timer()
     print(end - start)
     for mesto in riesenie:
-        print(f"({mesto.x}, {mesto.y})")
-    print(f"cena riesenia: {riesenie.fitness}")
+        print(f"{mesto.x}\t {mesto.y}")
+    print(f"cena riesenia: {tabu_search.fitness(riesenie)}")
