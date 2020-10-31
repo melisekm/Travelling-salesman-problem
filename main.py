@@ -15,6 +15,7 @@ def parse_input(path):
 
 
 if __name__ == "__main__":
+    print("GENETIC ALGORITHM...")
     cities = parse_input("vstup.txt")
     start = timeit.default_timer()
     # riesenie_tabu = tabu_search.run(cities, 500)

@@ -2,6 +2,7 @@ import random
 import timeit
 import sys
 
+import plotGraph
 from utils import fitness
 
 # metody vyberu rodica su:
@@ -9,13 +10,13 @@ from utils import fitness
 # 2 - turnaj
 
 metoda_vyberu_rodica = 1
-mutacia_probability = 100
+mutacia_probability = 20
 
 
 class Jedinec(list):
     def __init__(self, *args):
         list.__init__(self, *args)
-        self.cena = fitness(args[0])
+        self.cena = fitness(args[0]) ** -1
 
     def __lt__(self, other):
         return self.cena < other.cena
@@ -98,7 +99,7 @@ def mutacia(generacia, velkost):
 
 def vyber_najlepsich(najlepsia, krizenie, mutacia, nahodna, velkost):
     survived = najlepsia + krizenie + mutacia + nahodna
-    survived.sort()
+    survived.sort(reverse=True)
     return survived[0:velkost]
 
 
@@ -131,4 +132,6 @@ def run(cities):
         print(f"{jedinec[0].x}\t {jedinec[0].y}")
         print("*" * 50)
     sys.stdout = sys.__stdout__
+
+    plotGraph.run(best_jedinci)
     return generacia[0]
