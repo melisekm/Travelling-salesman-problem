@@ -21,6 +21,11 @@ if __name__ == "__main__":
     riesenie_genetic = genetic_algorithm.run(cities)
     end = timeit.default_timer()
     print(end - start)
+    """
     for mesto in riesenie_tabu:
         print(f"{mesto.x}\t {mesto.y}")
     print(f"cena riesenia: {fitness(riesenie_tabu)}")
+    """
+    for mesto in riesenie_genetic:
+        print(f"{mesto.x}\t {mesto.y}")
+    print(f"cena riesenia: {fitness(riesenie_genetic)}")
