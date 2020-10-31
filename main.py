@@ -1,5 +1,5 @@
-import tabu_search
 import timeit
+import tabu_search
 
 
 def parse_input(path):
