@@ -127,3 +127,5 @@ dmypy.json
 
 /.vscode
 .gitattributes
+best_candidate.txt
+globalne_max.txt

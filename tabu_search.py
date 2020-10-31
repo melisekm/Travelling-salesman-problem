@@ -1,26 +1,8 @@
-import math
 import random
 import timeit
 import sys
 
-
-class City:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-
-def fitness(stav):
-    result = 0
-    for i in range(len(stav) - 1):
-        result += euclidian_d(stav[i], stav[i + 1])
-    result += euclidian_d(stav[-1], stav[0])
-    return result
-
-
-def euclidian_d(city_A, city_B):
-    result = math.sqrt((city_A.x - city_B.x) ** 2 + (city_A.y - city_B.y) ** 2)
-    return int(round(result))
+from utils import City, fitness
 
 
 def vygenerujNasledovnikov(state):
@@ -46,23 +28,22 @@ def najdi_najlepsieho_kandidata(nasledovnici, tabu_list):
     return kandidat
 
 
-def stop(start):
-    return timeit.default_timer() - start > 30
+def stop(nevylepsil, stopAt, start):
+    return nevylepsil == stopAt or timeit.default_timer() - start > 30
 
 
 def run(cities, maxTabuSize):
-    maxTabuSize = 500
-    stopAt = 2000
+    stopAt = 1000
     nevylepsil = 0
     nahodny = [City(city[0], city[1]) for city in cities]
+    random.shuffle(nahodny)
     globalne_max = nahodny
     najlepsi_kandidat = nahodny
-    tabu_list = []
-    tabu_list.append(nahodny)
-    start = timeit.default_timer()
+    tabu_list = [nahodny]
     sys.stdout = open("globalne_max.txt", "w")
     sys.stdout = open("best_candidate.txt", "w")
-    while not stop(start) and nevylepsil != stopAt:
+    start = timeit.default_timer()
+    while not stop(nevylepsil, stopAt, start):
 
         nasledovnici = vygenerujNasledovnikov(najlepsi_kandidat)
         najlepsi_kandidat = najdi_najlepsieho_kandidata(nasledovnici, tabu_list)
