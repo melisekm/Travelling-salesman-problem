@@ -1,7 +1,8 @@
 import timeit
 import tabu_search
+import genetic_algorithm
 
-from utils import fitness
+from utils import fitness, City
 
 
 def parse_input(path):
@@ -10,13 +11,14 @@ def parse_input(path):
         for line in file:
             suradnice = line.strip("").split()  # rozdeli
             cities.append(list(map(float, suradnice)))
-    return cities
+    return [City(city[0], city[1]) for city in cities]
 
 
 if __name__ == "__main__":
     cities = parse_input("vstup.txt")
     start = timeit.default_timer()
-    riesenie_tabu = tabu_search.run(cities, 500)
+    # riesenie_tabu = tabu_search.run(cities, 500)
+    riesenie_genetic = genetic_algorithm.run(cities)
     end = timeit.default_timer()
     print(end - start)
     for mesto in riesenie_tabu:

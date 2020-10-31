@@ -2,7 +2,7 @@ import random
 import timeit
 import sys
 
-from utils import City, fitness
+from utils import fitness
 
 
 def vygenerujNasledovnikov(state):
@@ -33,13 +33,13 @@ def stop(nevylepsil, stopAt, start):
 
 
 def run(cities, maxTabuSize):
+    maxTabuSize = 500
     stopAt = 1000
     nevylepsil = 0
-    nahodny = [City(city[0], city[1]) for city in cities]
-    random.shuffle(nahodny)
-    globalne_max = nahodny
-    najlepsi_kandidat = nahodny
-    tabu_list = [nahodny]
+    random.shuffle(cities)  # vygenerovanie nahodneho vektoru
+    globalne_max = cities  # sBest
+    najlepsi_kandidat = cities  # bestCandidate
+    tabu_list = [cities]  # tabuList
     sys.stdout = open("globalne_max.txt", "w")
     sys.stdout = open("best_candidate.txt", "w")
     start = timeit.default_timer()
