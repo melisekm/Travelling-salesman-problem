@@ -1,7 +1,6 @@
 import random
 import timeit
 import sys
-import copy
 
 from utils import fitness
 
@@ -13,10 +12,10 @@ metoda_vyberu_rodica = 1
 mutacia_probability = 10
 
 
-class Jedinec:
+class Jedinec(list):
     def __init__(self, *args):
-        self.chromozom = args[0]
-        self.cena = fitness(args[0])
+        list.__init__(self, *args)
+        self.cena = fitness(args[0]) ** -1
 
     def __lt__(self, other):
         return self.cena < other.cena
@@ -37,11 +36,11 @@ def ruleta(generacia):
         sucet_fitness += jedinec.cena
     rodicia = []
     for _ in range(2):
-        hod = random.randint(0, sucet_fitness)
+        hod = random.uniform(0, sucet_fitness)
         priebezny_pocet = 0
         for jedinec in generacia:
             priebezny_pocet += jedinec.cena
-            if priebezny_pocet > hod:
+            if priebezny_pocet >= hod:
                 rodicia.append(jedinec)
                 break
     return rodicia
@@ -52,8 +51,8 @@ def TODO(generacia):
 
 
 def nahodny_usek(state):
-    start = random.randint(0, len(state.chromozom) - 2)
-    end = random.randint(start + 1, len(state.chromozom) - 1)
+    start = random.randint(0, len(state) - 2)
+    end = random.randint(start + 1, len(state) - 1)
     return start, end
 
 
@@ -66,9 +65,7 @@ def vyber_rodicov(generacia):
 
 def two_point_krizenie(rodicia):
     start, end = nahodny_usek(rodicia[0])
-    tmp = copy.deepcopy(rodicia[1].chromozom)
-    for i, cislo in zip(range(start, end), list(tmp)):
-        tmp.remove(rodicia[0].chromozom[i])
+    tmp = [x for x in rodicia[1] if x not in rodicia[0][start:end]]
     dieta = tmp[0:start] + rodicia[0][start:end] + tmp[start:]
     return dieta
 
@@ -84,7 +81,7 @@ def krizenie(generacia, velkost):
 
 def otocenie_useku_mutacia(rodic):
     start, end = nahodny_usek(rodic)
-    dieta = rodic[0:start] + rodic[end:start] + rodic[end:]
+    dieta = rodic[0:start] + list(reversed(rodic[start:end])) + rodic[end:]
     return dieta
 
 
@@ -101,13 +98,12 @@ def mutacia(generacia, velkost):
 
 def vyber_najlepsich(najlepsia, krizenie, mutacia, nahodna, velkost):
     survived = najlepsia + krizenie + mutacia + nahodna
-    survived.sort()
-
+    survived.sort(reverse=True)
     return survived[0:velkost]
 
 
 def stop(iteracia, stopAt, start):
-    return iteracia == stopAt or timeit.default_timer() - start > 300
+    return iteracia == stopAt or timeit.default_timer() - start > 30
 
 
 def run(cities):
