@@ -9,13 +9,13 @@ from utils import fitness
 # 2 - turnaj
 
 metoda_vyberu_rodica = 1
-mutacia_probability = 10
+mutacia_probability = 100
 
 
 class Jedinec(list):
     def __init__(self, *args):
         list.__init__(self, *args)
-        self.cena = fitness(args[0]) ** -1
+        self.cena = fitness(args[0])
 
     def __lt__(self, other):
         return self.cena < other.cena
@@ -98,7 +98,7 @@ def mutacia(generacia, velkost):
 
 def vyber_najlepsich(najlepsia, krizenie, mutacia, nahodna, velkost):
     survived = najlepsia + krizenie + mutacia + nahodna
-    survived.sort(reverse=True)
+    survived.sort()
     return survived[0:velkost]
 
 
@@ -112,14 +112,23 @@ def run(cities):
     stopAt = 1000
     generacia = random_generacia(cities, 50)
     generacia.sort(reverse=True)
+    best_jedinci = []
+    sys.stdout = open("genetic_max.txt", "w")
     while not stop(iteracia, stopAt, start):
         krizenie_generacia = krizenie(generacia, 32)
         mutacia_generacia = mutacia(krizenie_generacia, 14)
         nahodna_generacia = random_generacia(cities, 4)
+        best_jedinci.append(generacia[0])
         generacia = vyber_najlepsich(
             generacia, krizenie_generacia, mutacia_generacia, nahodna_generacia, 50
         )
 
         iteracia += 1
-
+    sys.stdout = open("genetic_max.txt", "a")
+    for jedinec in best_jedinci:
+        for mesto in jedinec:
+            print(f"{mesto.x}\t {mesto.y}")
+        print(f"{jedinec[0].x}\t {jedinec[0].y}")
+        print("*" * 50)
+    sys.stdout = sys.__stdout__
     return generacia[0]
