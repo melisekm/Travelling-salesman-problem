@@ -34,8 +34,7 @@ def euclidian_d(a, b):
 def print_riesenie(riesenie):
     # for mesto in riesenie:
     #    print(f"{round(mesto.x, 2)} \t {round(mesto.y, 2)}")
-    print(f"cena riesenia: {fitness(riesenie)}")
-    # print(f"Hladanie bezalo: {riesenie.runTime}")
+    print(f"Cena riesenia: {fitness(riesenie)}")
+    print(f"Hladanie bezalo: {riesenie.runTime}")
 
-
-# plot_graph.run(riesenie.best_jedinci)
+    plot_graph.run(riesenie.best_jedinci)

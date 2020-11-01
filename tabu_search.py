@@ -34,7 +34,7 @@ def stop(nevylepsil, stopAt, start):
 
 def run(cities, maxTabuSize):
     maxTabuSize = 500
-    stopAt = 1000
+    stopAt = 500
     nevylepsil = 0
     random.shuffle(cities)  # vygenerovanie nahodneho vektoru
     globalne_max = cities  # sBest
@@ -67,5 +67,6 @@ def run(cities, maxTabuSize):
         nevylepsil += 1
 
     sys.stdout = sys.__stdout__
-
+    print(timeit.default_timer() - start)
+    print(fitness(globalne_max))
     return globalne_max

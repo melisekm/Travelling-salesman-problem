@@ -1,16 +1,52 @@
 import random
 import timeit
-import sys
 import math
 
 from utils import fitness
 
 
-class Rozvrh:
-    def __init__(self, velkost):
-        self.ochladenie = 0.9995
-        self.pociatocna_teplota = math.sqrt(velkost)
-        self.min_teplota = 1e-8
+class SimulatedAnnealing(list):
+    def __init__(self, cities, args):
+        print("SIMULATED ANNEALING...")
+        self.parse_args(args)  # spracuje argumenty
+        self.best_jedinci = []  # zoznam pre vizualizaciu
+        initTime = timeit.default_timer()
+        rozvrh = Rozvrh(self.ochladenie, len(cities), self.min_teplota)
+        random.shuffle(cities)
+        current = Stav(cities)
+        teplota = rozvrh.pociatocna_teplota
+
+        while not self.stop(teplota, rozvrh.min_teplota, initTime):
+            sused = self.vyber_nasledovnika(current)
+            delta = sused.fitness - current.fitness
+            if delta > 0 or self.probabilita(delta, teplota):
+                current = sused
+            self.best_jedinci.append(current)  # ukladame pre vizualizaciu
+            teplota *= rozvrh.ochladenie
+
+        self.runTime = timeit.default_timer() - initTime
+        list.__init__(self, current)
+
+    def vyber_nasledovnika(self, stav):
+        start, end = nahodny_usek(stav)  # vyberie usek a otoci ho
+        dieta = stav[0:start] + list(reversed(stav[start:end])) + stav[end:]
+        return Stav(dieta)
+
+    def probabilita(self, delta, teplota):
+        probabilita = math.exp(delta / teplota)
+        rand = random.uniform(0, 1)
+        if probabilita >= rand:
+            return True
+        else:
+            return False
+
+    def stop(self, teplota, min_teplota, start):
+        return teplota < min_teplota or timeit.default_timer() - start > self.max_trvanie
+
+    def parse_args(self, args):
+        self.ochladenie = args[0]
+        self.min_teplota = args[1]
+        self.max_trvanie = args[2]
 
 
 class Stav(list):
@@ -19,61 +55,15 @@ class Stav(list):
         self.fitness = fitness(args[0]) ** -1  # obratena hodnota
 
 
-def stop(start):
-    return timeit.default_timer() - start > 30
+class Rozvrh:
+    def __init__(self, ochladenie, velkost, min_teplota):
+        self.ochladenie = 1 - ochladenie
+        self.pociatocna_teplota = math.sqrt(velkost)
+        self.min_teplota = min_teplota
 
 
-def vyber_nasledovnika(stav):
-    rand1 = random.randint(0, len(stav) - 1)
-    rand2 = random.randint(0, len(stav) - 1)
-
-    nasledovnik = stav.copy()
-    nasledovnik[rand1 : (rand1 + rand2)] = reversed(nasledovnik[rand1 : (rand1 + rand2)])
-    return Stav(nasledovnik)
-
-
-def probability(delta, teplota):
-    probabilita = math.exp(delta / teplota)
-    rand = random.uniform(0, 1)
-    if probabilita >= rand:
-        return True
-    else:
-        return False
-
-
-def run(cities):
-    rozvrh = Rozvrh(len(cities))
-    initTime = timeit.default_timer()
-    random.shuffle(cities)
-    current = Stav(cities)
-    teplota = rozvrh.pociatocna_teplota
-    # vsetky = []
-    while not stop(initTime):
-        if teplota < rozvrh.min_teplota:
-            break
-        sused = vyber_nasledovnika(current)
-        delta = sused.fitness - current.fitness
-        if delta > 0 or probability(delta, teplota):
-            current = sused
-        # vsetky.append(current)
-        teplota *= rozvrh.ochladenie
-
-    print(timeit.default_timer() - initTime)
-    # vsetky = vytried(vsetky)
-    # sys.stdout = open("GA.txt", "w")
-    # for i in vsetky:
-    #    print(fitness(i))
-
-    sys.stdout = sys.__stdout__
-    return current
-
-
-def vytried(best_jedinci):
-    print("Triedim..")
-    uniq = [best_jedinci[0]]
-    prev = fitness(best_jedinci[0])
-    for jedinec in best_jedinci:
-        if prev != fitness(jedinec):
-            uniq.append(jedinec)
-        prev = fitness(jedinec)
-    return uniq
+# vyberie usek v permutacii navstivenia miest, min dlzka 2
+def nahodny_usek(state):
+    start = random.randint(0, len(state) - 2)
+    end = random.randint(start + 1, len(state) - 1)
+    return start, end

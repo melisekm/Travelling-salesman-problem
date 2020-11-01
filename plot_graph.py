@@ -16,7 +16,19 @@ def run(best_jedinci):
 
 def vytvor_obrazky(uniq):
     print("Vytvaram obrazky..")
+    indexx = 0
+    if len(uniq) > 1000:
+        prev = uniq[0].fitness
     for index, jedinec in enumerate(uniq):
+        if len(uniq) > 1000:
+            if index > len(uniq) - 50:
+                pass
+            elif jedinec.fitness < prev:
+                continue
+            if index < len(uniq) - 50 and index % 3 == 0:
+                continue
+            prev = jedinec.fitness
+        indexx += 1
         x = []
         y = []
         for point in jedinec:
@@ -27,7 +39,7 @@ def vytvor_obrazky(uniq):
         plt.title(f"cena{utils.fitness(jedinec)}")
         plt.scatter(x, y)
         plt.plot(x, y)
-        plt.savefig(f"../images/stav-{index}.jpg")
+        plt.savefig(f"../images/stav-{indexx}.jpg")
         plt.close()
     print("Done")
 
