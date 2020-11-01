@@ -1,20 +1,19 @@
 import tabu_search
-import genetic_algorithm
+from genetic_algorithm import GeneticAlgorithm
 
-from utils import City
+from utils import parse_input
 
-
-def parse_input(path):
-    cities = []
-    with open(path, "r") as file:
-        for line in file:
-            suradnice = line.strip("").split()  # rozdeli
-            cities.append(list(map(float, suradnice)))
-    return [City(city[0], city[1]) for city in cities]
-
+genetic_algorithm_args = [
+    50,  # Velkost Generacie
+    32,  # Max pocet Krizeni
+    14,  # Max pocet Mutacii
+    4,  # Max nahodnych chromozomov v generacii
+    20,  # Pravdepodobnost mutacie v %
+    1,  # Metoda vyberu rodicov, 1 - Ruleta, 2 - TODO
+    1000,  # Max pocet iteracii
+]
 
 if __name__ == "__main__":
     cities = parse_input("vstup.txt")
     # riesenie_tabu = tabu_search.run(cities, 500)
-    print("GENETIC ALGORITHM...")
-    riesenie_genetic = genetic_algorithm.run(cities)
+    riesenie_genetic = GeneticAlgorithm(cities, genetic_algorithm_args)

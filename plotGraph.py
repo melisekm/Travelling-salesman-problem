@@ -5,19 +5,16 @@ import utils
 
 
 def run(best_jedinci):
-    print("Triedim..")
+    vstup = input("Chcete vytvorit obrazky?: ")
+    if vstup != "y":
+        return
+    uniq = vytried(best_jedinci)
+    zmaz_stare(uniq)
+    vytvor_obrazky(uniq)
+    vytvor_video(uniq)  # pozor na nazov obrazkov a cestu k nim
 
-    uniq = [best_jedinci[0]]
-    prev = utils.fitness(best_jedinci[0])
-    for jedinec in best_jedinci:
-        if prev != utils.fitness(jedinec):
-            uniq.append(jedinec)
-        prev = utils.fitness(jedinec)
 
-    files = glob.glob("../images/*")
-    if len(files) != len(uniq):
-        for f in files:
-            os.remove(f)
+def vytvor_obrazky(uniq):
     print("Vytvaram obrazky..")
     for index, jedinec in enumerate(uniq):
         x = []
@@ -32,8 +29,28 @@ def run(best_jedinci):
         plt.plot(x, y)
         plt.savefig(f"../images/stav-{index}.jpg")
         plt.close()
-
     print("Done")
+
+
+def zmaz_stare(uniq):
+    files = glob.glob("../images/*")
+    if len(files) != len(uniq):
+        for f in files:
+            os.remove(f)
+
+
+def vytried(best_jedinci):
+    print("Triedim..")
+    uniq = [best_jedinci[0]]
+    prev = utils.fitness(best_jedinci[0])
+    for jedinec in best_jedinci:
+        if prev != utils.fitness(jedinec):
+            uniq.append(jedinec)
+        prev = utils.fitness(jedinec)
+    return uniq
+
+
+def vytvor_video(uniq):
     video = input("Chcete vytvorit video? ffmpeg je potrebny: ")
     if video == "y":
         if len(uniq) > 40:
