@@ -1,4 +1,6 @@
 import math
+import timeit
+import plotGraph
 
 
 class City:
@@ -18,3 +20,12 @@ def fitness(stav):
 def euclidian_d(city_A, city_B):
     result = math.sqrt((city_A.x - city_B.x) ** 2 + (city_A.y - city_B.y) ** 2)
     return int(round(result))
+
+
+def GA_utils(najlepsi, start, best_jedinci):
+    for mesto in najlepsi:
+        print(f"{mesto.x}\t {mesto.y}")
+    print(f"cena riesenia: {fitness(najlepsi)}")
+    end = timeit.default_timer()
+    print(end - start)
+    plotGraph.run(best_jedinci)

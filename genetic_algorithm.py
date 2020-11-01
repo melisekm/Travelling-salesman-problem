@@ -2,8 +2,7 @@ import random
 import timeit
 import sys
 
-import plotGraph
-from utils import fitness
+from utils import fitness, GA_utils
 
 # metody vyberu rodica su:
 # 1 - ruleta?
@@ -71,6 +70,12 @@ def two_point_krizenie(rodicia):
     return dieta
 
 
+def otocenie_useku_mutacia(rodic):
+    start, end = nahodny_usek(rodic)
+    dieta = rodic[0:start] + list(reversed(rodic[start:end])) + rodic[end:]
+    return dieta
+
+
 def krizenie(generacia, velkost):
     deti = []
     for _ in range(velkost):
@@ -78,12 +83,6 @@ def krizenie(generacia, velkost):
         dieta = two_point_krizenie(rodicia)
         deti.append(Jedinec(dieta))
     return deti
-
-
-def otocenie_useku_mutacia(rodic):
-    start, end = nahodny_usek(rodic)
-    dieta = rodic[0:start] + list(reversed(rodic[start:end])) + rodic[end:]
-    return dieta
 
 
 def mutacia(generacia, velkost):
@@ -125,13 +124,7 @@ def run(cities):
         )
 
         iteracia += 1
-    sys.stdout = open("genetic_max.txt", "a")
-    for jedinec in best_jedinci:
-        for mesto in jedinec:
-            print(f"{mesto.x}\t {mesto.y}")
-        print(f"{jedinec[0].x}\t {jedinec[0].y}")
-        print("*" * 50)
-    sys.stdout = sys.__stdout__
 
-    plotGraph.run(best_jedinci)
+    sys.stdout = sys.__stdout__
+    GA_utils(generacia[0], start, best_jedinci)
     return generacia[0]

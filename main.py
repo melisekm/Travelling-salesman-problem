@@ -1,8 +1,7 @@
-import timeit
 import tabu_search
 import genetic_algorithm
 
-from utils import fitness, City
+from utils import City
 
 
 def parse_input(path):
@@ -15,18 +14,7 @@ def parse_input(path):
 
 
 if __name__ == "__main__":
-    print("GENETIC ALGORITHM...")
     cities = parse_input("vstup.txt")
-    start = timeit.default_timer()
     # riesenie_tabu = tabu_search.run(cities, 500)
+    print("GENETIC ALGORITHM...")
     riesenie_genetic = genetic_algorithm.run(cities)
-    end = timeit.default_timer()
-    print(end - start)
-    """
-    for mesto in riesenie_tabu:
-        print(f"{mesto.x}\t {mesto.y}")
-    print(f"cena riesenia: {fitness(riesenie_tabu)}")
-    """
-    for mesto in riesenie_genetic:
-        print(f"{mesto.x}\t {mesto.y}")
-    print(f"cena riesenia: {fitness(riesenie_genetic)}")

@@ -52,9 +52,7 @@ def run(cities, maxTabuSize):
         globalne_max_fitness = fitness(globalne_max)
 
         sys.stdout = open("best_candidate.txt", "a")
-        print(
-            f"{round(timeit.default_timer() - start,2)} {najlepsi_kandidat_fitness} {len(tabu_list)}"
-        )
+        print(f"{round(timeit.default_timer() - start,2)} {najlepsi_kandidat_fitness} {len(tabu_list)}")
 
         if najlepsi_kandidat_fitness < globalne_max_fitness:
             sys.stdout = open("globalne_max.txt", "a")
@@ -69,4 +67,10 @@ def run(cities, maxTabuSize):
         nevylepsil += 1
 
     sys.stdout = sys.__stdout__
+
+    for mesto in globalne_max:
+        print(f"{mesto.x}\t {mesto.y}")
+    print(f"cena riesenia: {fitness(globalne_max)}")
+    end = timeit.default_timer()
+    print(end - start)
     return globalne_max

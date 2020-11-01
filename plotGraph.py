@@ -5,6 +5,8 @@ import utils
 
 
 def run(best_jedinci):
+    print("Triedim..")
+
     uniq = [best_jedinci[0]]
     prev = utils.fitness(best_jedinci[0])
     for jedinec in best_jedinci:
@@ -16,6 +18,7 @@ def run(best_jedinci):
     if len(files) != len(uniq):
         for f in files:
             os.remove(f)
+    print("Vytvaram obrazky..")
     for index, jedinec in enumerate(uniq):
         x = []
         y = []
@@ -30,12 +33,13 @@ def run(best_jedinci):
         plt.savefig(f"../images/stav-{index}.jpg")
         plt.close()
 
+    print("Done")
     video = input("Chcete vytvorit video? ffmpeg je potrebny: ")
     if video == "y":
-        # if len(nodes[0].stav) * len(nodes[0].stav[0]) > 9:
-        #    rychlost = 5  # je to skor rychlost spomalenia :D
-        # else:
-        rychlost = 8
+        if len(uniq) > 40:
+            rychlost = 5  # je to skor rychlost spomalenia :D
+        else:
+            rychlost = 8
         os.system(
             'cmd /c "C:/Users/melis/Desktop/ffmpeg/bin/ffmpeg.exe -loglevel quiet -y -f image2 -i "C:/Users/melis/Desktop/Dropbox/5.semester/UI/Zadanie 3/images/stav-%d.jpg" -vcodec libx264 -b 800k  -vf "setpts='
             + str(rychlost)
