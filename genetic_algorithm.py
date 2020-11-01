@@ -1,24 +1,23 @@
 import random
 import timeit
-import sys
 
-from utils import fitness, GA_utils
+from utils import fitness
 
 
 class GeneticAlgorithm(list):
     def __init__(self, cities, args):
         print("GENETIC ALGORITHM...")
         self.parse_args(args)  # spracuje argumenty
-        start = timeit.default_timer()
+        initTime = timeit.default_timer()
         iteracia = 0
         generacia = random_generacia(cities, self.velkost_generacie)
         generacia.sort(reverse=True)  # Najvyssia fittnes prva
-        best_jedinci = []  # zoznam pre vizualizaciu
-        while not self.stop(iteracia, start):
+        self.best_jedinci = []  # zoznam pre vizualizaciu
+        while not self.stop(iteracia, initTime):
             krizenie_generacia = Krizenie(generacia, self.pocet_krizeni, self.metoda_vyberu_rodica)
             mutacia_generacia = Mutacia(krizenie_generacia, self.pocet_mutacii, self.mutacia_probability)
             nahodna_generacia = random_generacia(cities, self.pocet_nahodnych)
-            best_jedinci.append(generacia[0])  # ukladame najlepsieho z generacie
+            self.best_jedinci.append(generacia[0])  # ukladame najlepsieho z generacie
             generacia = self.vyber_najlepsich(
                 generacia,
                 krizenie_generacia,
@@ -27,9 +26,7 @@ class GeneticAlgorithm(list):
                 self.velkost_generacie,
             )
             iteracia += 1
-
-        sys.stdout = sys.__stdout__
-        GA_utils(generacia[0], start, best_jedinci)  # print info
+        self.runTime = timeit.default_timer() - initTime
         list.__init__(self, generacia[0])  # vrati list of lists s najlepsim vysledkom
 
     # Survival of the Fittest, zo vsetkych vygenerovanych odstrani najhorsie

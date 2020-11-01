@@ -1,5 +1,4 @@
 import math
-import timeit
 import plot_graph
 
 
@@ -31,11 +30,10 @@ def euclidian_d(city_A, city_B):
     return int(round(result))
 
 
-def GA_utils(najlepsi, start, best_jedinci):
-    end = timeit.default_timer()
-    for mesto in najlepsi:
-        print(f"{mesto.x}\t {mesto.y}")
-    print(f"cena riesenia: {fitness(najlepsi)}")
-    print(f"Hladanie bezalo: {end - start}")
+def print_riesenie(riesenie):
+    for mesto in riesenie:
+        print(f"{round(mesto.x, 2)} \t {round(mesto.y, 2)}")
+    print(f"cena riesenia: {fitness(riesenie)}")
+    print(f"Hladanie bezalo: {riesenie.runTime}")
 
-    plot_graph.run(best_jedinci)
+    plot_graph.run(riesenie.best_jedinci)
