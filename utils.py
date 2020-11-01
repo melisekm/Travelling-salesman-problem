@@ -12,7 +12,7 @@ def parse_input(path):
     cities = []
     with open(path, "r") as file:
         for line in file:
-            suradnice = line.strip("").split()  # rozdeli
+            suradnice = line.strip().split()  # rozdeli
             cities.append(list(map(float, suradnice)))
     return [City(city[0], city[1]) for city in cities]
 
@@ -22,18 +22,20 @@ def fitness(stav):
     for i in range(len(stav) - 1):
         result += euclidian_d(stav[i], stav[i + 1])
     result += euclidian_d(stav[-1], stav[0])
-    return result
-
-
-def euclidian_d(city_A, city_B):
-    result = math.sqrt((city_A.x - city_B.x) ** 2 + (city_A.y - city_B.y) ** 2)
     return int(round(result))
 
 
-def print_riesenie(riesenie):
-    for mesto in riesenie:
-        print(f"{round(mesto.x, 2)} \t {round(mesto.y, 2)}")
-    print(f"cena riesenia: {fitness(riesenie)}")
-    print(f"Hladanie bezalo: {riesenie.runTime}")
+def euclidian_d(a, b):
+    result = math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+    # return int(round(result))
+    return result
 
-    plot_graph.run(riesenie.best_jedinci)
+
+def print_riesenie(riesenie):
+    # for mesto in riesenie:
+    #    print(f"{round(mesto.x, 2)} \t {round(mesto.y, 2)}")
+    print(f"cena riesenia: {fitness(riesenie)}")
+    # print(f"Hladanie bezalo: {riesenie.runTime}")
+
+
+# plot_graph.run(riesenie.best_jedinci)

@@ -68,9 +68,4 @@ def run(cities, maxTabuSize):
 
     sys.stdout = sys.__stdout__
 
-    for mesto in globalne_max:
-        print(f"{mesto.x}\t {mesto.y}")
-    print(f"cena riesenia: {fitness(globalne_max)}")
-    end = timeit.default_timer()
-    print(end - start)
     return globalne_max
