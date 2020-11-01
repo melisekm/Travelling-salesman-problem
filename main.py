@@ -1,4 +1,4 @@
-import tabu_search
+from tabu_search import TabuSearch
 from simulated_annealing import SimulatedAnnealing
 from genetic_algorithm import GeneticAlgorithm
 from utils import parse_input, print_riesenie
@@ -57,13 +57,13 @@ def GA_testovanie():
 if __name__ == "__main__":
     cities = parse_input("vstup.txt")
 
-    riesenie_genetic = GeneticAlgorithm(cities, genetic_algorithm_args)
-    print_riesenie(riesenie_genetic)  # print info
+    # riesenie_GA = GeneticAlgorithm(cities, genetic_algorithm_args)
+    # print_riesenie(riesenie_GA)  # print info
 
     # GA_testovanie()
 
     # riesenie_SA = SimulatedAnnealing(cities, simulated_annealing_args)
     # print_riesenie(riesenie_SA)
 
-    # riesenie_tabu = tabu_search.run(cities, 200)  # TODO Refactor
-    # print_riesenie(riesenie_tabu)  # TODO
+    riesenie_TABU = TabuSearch(cities, tabu_search_args)
+    print_riesenie(riesenie_TABU)

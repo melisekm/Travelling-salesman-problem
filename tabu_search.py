@@ -1,72 +1,59 @@
 import random
 import timeit
-import sys
-
 from utils import fitness
 
 
-def vygenerujNasledovnikov(state):
-    rand = random.randint(1, len(state) - 1)
-    nasledovnici = []
+class TabuSearch(list):
+    def __init__(self, cities, args):
+        print("TABU SEARCH...")
+        self.parse_args(args)
+        self.best_jedinci = []
+        random.shuffle(cities)  # vygenerovanie nahodneho vektoru
+        globalne_max = cities  # sBest
+        najlepsi_kandidat = cities  # bestCandidate
+        tabu_list = [cities]
+        nevylepsil = 0
+        init_time = timeit.default_timer()
+        while not self.stop(nevylepsil, init_time):
+            nasledovnici = self.vygenerujNasledovnikov(najlepsi_kandidat)
+            najlepsi_kandidat = self.najdi_najlepsieho_kandidata(nasledovnici, tabu_list)
 
-    for i in range(1, len(state)):
-        if i != rand:
-            nasledovnik = state.copy()
-            nasledovnik[i], nasledovnik[rand] = nasledovnik[rand], nasledovnik[i]
-            nasledovnici.append(nasledovnik)
+            najlepsi_kandidat_fitness = fitness(najlepsi_kandidat)
+            globalne_max_fitness = fitness(globalne_max)
 
-    return nasledovnici
+            if najlepsi_kandidat_fitness < globalne_max_fitness:
+                globalne_max = najlepsi_kandidat
+                self.best_jedinci.append(globalne_max)
+                nevylepsil = 0
 
+            tabu_list.append(najlepsi_kandidat)
+            if len(tabu_list) > self.max_tabu_size:
+                tabu_list.pop(0)
+            nevylepsil += 1
+        self.run_time = timeit.default_timer() - init_time
+        list.__init__(self, globalne_max)
 
-def najdi_najlepsieho_kandidata(nasledovnici, tabu_list):
-    kandidat = nasledovnici[0]
+    def vygenerujNasledovnikov(self, state):
+        rand = random.randint(0, len(state) - 1)
+        nasledovnici = []
+        for i in range(0, len(state)):
+            if i != rand:
+                nasledovnik = state.copy()
+                nasledovnik[i], nasledovnik[rand] = nasledovnik[rand], nasledovnik[i]
+                nasledovnici.append(nasledovnik)
+        return nasledovnici
 
-    for nasledovnik in nasledovnici:
-        if nasledovnik not in tabu_list and fitness(nasledovnik) < fitness(kandidat):
-            kandidat = nasledovnik
+    def najdi_najlepsieho_kandidata(self, nasledovnici, tabu_list):
+        kandidat = nasledovnici[0]
+        for nasledovnik in nasledovnici:
+            if nasledovnik not in tabu_list and fitness(nasledovnik) < fitness(kandidat):
+                kandidat = nasledovnik
+        return kandidat
 
-    return kandidat
+    def stop(self, nevylepsil, start):
+        return nevylepsil == self.max_iteracii or timeit.default_timer() - start > self.max_tabu_size
 
-
-def stop(nevylepsil, stopAt, start):
-    return nevylepsil == stopAt or timeit.default_timer() - start > 30
-
-
-def run(cities, maxTabuSize):
-    maxTabuSize = 500
-    stopAt = 500
-    nevylepsil = 0
-    random.shuffle(cities)  # vygenerovanie nahodneho vektoru
-    globalne_max = cities  # sBest
-    najlepsi_kandidat = cities  # bestCandidate
-    tabu_list = [cities]  # tabuList
-    sys.stdout = open("globalne_max.txt", "w")
-    sys.stdout = open("best_candidate.txt", "w")
-    start = timeit.default_timer()
-    while not stop(nevylepsil, stopAt, start):
-
-        nasledovnici = vygenerujNasledovnikov(najlepsi_kandidat)
-        najlepsi_kandidat = najdi_najlepsieho_kandidata(nasledovnici, tabu_list)
-
-        najlepsi_kandidat_fitness = fitness(najlepsi_kandidat)
-        globalne_max_fitness = fitness(globalne_max)
-
-        sys.stdout = open("best_candidate.txt", "a")
-        print(f"{round(timeit.default_timer() - start,2)} {najlepsi_kandidat_fitness} {len(tabu_list)}")
-
-        if najlepsi_kandidat_fitness < globalne_max_fitness:
-            sys.stdout = open("globalne_max.txt", "a")
-            globalne_max = najlepsi_kandidat
-            print(f"{round(timeit.default_timer() - start,2)} {najlepsi_kandidat_fitness} ")
-            nevylepsil = 0
-
-        tabu_list.append(najlepsi_kandidat)
-        if len(tabu_list) > maxTabuSize:
-            tabu_list.pop(0)
-
-        nevylepsil += 1
-
-    sys.stdout = sys.__stdout__
-    print(timeit.default_timer() - start)
-    print(fitness(globalne_max))
-    return globalne_max
+    def parse_args(self, args):
+        self.max_tabu_size = args[0]
+        self.max_iteracii = args[1]
+        self.max_trvanie = args[2]

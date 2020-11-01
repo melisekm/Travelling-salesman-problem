@@ -9,10 +9,10 @@ class GeneticAlgorithm(list):
         self.parse_args(args)  # spracuje argumenty
         self.best_jedinci = []  # zoznam pre vizualizaciu
         iteracia = 0
-        initTime = timeit.default_timer()
+        init_time = timeit.default_timer()
         generacia = random_generacia(cities, self.velkost_generacie)
         generacia.sort(reverse=True)  # Najvyssia fittnes prva
-        while not self.stop(iteracia, initTime):
+        while not self.stop(iteracia, init_time):
             krizenie_generacia = Krizenie(generacia, self.pocet_krizeni, self.metoda_vyberu_rodica)
             mutacia_generacia = Mutacia(krizenie_generacia, self.pocet_mutacii, self.mutacia_probability)
             nahodna_generacia = random_generacia(cities, self.pocet_nahodnych)
@@ -25,7 +25,7 @@ class GeneticAlgorithm(list):
                 self.velkost_generacie,
             )
             iteracia += 1
-        self.runTime = timeit.default_timer() - initTime
+        self.run_time = timeit.default_timer() - init_time
         list.__init__(self, generacia[0])  # vrati list of lists s najlepsim vysledkom
 
     # Survival of the Fittest, zo vsetkych vygenerovanych odstrani najhorsie

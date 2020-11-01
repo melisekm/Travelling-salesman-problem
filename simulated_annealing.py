@@ -10,13 +10,13 @@ class SimulatedAnnealing(list):
         print("SIMULATED ANNEALING...")
         self.parse_args(args)  # spracuje argumenty
         self.best_jedinci = []  # zoznam pre vizualizaciu
-        initTime = timeit.default_timer()
+        init_time = timeit.default_timer()
         rozvrh = Rozvrh(self.ochladenie, len(cities), self.min_teplota)
         random.shuffle(cities)
         current = Stav(cities)
         teplota = rozvrh.pociatocna_teplota
 
-        while not self.stop(teplota, rozvrh.min_teplota, initTime):
+        while not self.stop(teplota, rozvrh.min_teplota, init_time):
             sused = self.vyber_nasledovnika(current)
             delta = sused.fitness - current.fitness
             if delta > 0 or self.probabilita(delta, teplota):
@@ -24,7 +24,7 @@ class SimulatedAnnealing(list):
             self.best_jedinci.append(current)  # ukladame pre vizualizaciu
             teplota *= rozvrh.ochladenie
 
-        self.runTime = timeit.default_timer() - initTime
+        self.run_time = timeit.default_timer() - init_time
         list.__init__(self, current)
 
     def vyber_nasledovnika(self, stav):
