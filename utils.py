@@ -1,6 +1,6 @@
 import math
 import timeit
-import plotGraph
+import plot_graph
 
 
 class City:
@@ -38,4 +38,4 @@ def GA_utils(najlepsi, start, best_jedinci):
     print(f"cena riesenia: {fitness(najlepsi)}")
     print(f"Hladanie bezalo: {end - start}")
 
-    plotGraph.run(best_jedinci)
+    plot_graph.run(best_jedinci)
