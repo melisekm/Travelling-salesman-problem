@@ -1,8 +1,7 @@
-from tabu_search import TabuSearch
-from simulated_annealing import SimulatedAnnealing
 from genetic_algorithm import GeneticAlgorithm
+from simulated_annealing import SimulatedAnnealing
+from tabu_search import TabuSearch
 from utils import parse_input, print_riesenie
-import tests
 
 genetic_algorithm_args = [
     50,  # Velkost Generacie
@@ -10,14 +9,14 @@ genetic_algorithm_args = [
     14,  # Max pocet Mutacii
     4,  # Max nahodnych chromozomov v generacii
     20,  # Pravdepodobnost mutacie v %
-    3,  # hladanie vyberu rodicov, 1 - Ruleta, 2 - Rank Selection, 3 - Turnaj
+    2,  # hladanie vyberu rodicov, 1 - Ruleta, 2 - Rank Selection, 3 - Turnaj
     1000,  # Max pocet iteracii
     30,  # Max dlzka trvania v sek
 ]
 
 tabu_search_args = [
     500,  # Max velkost tabu listu
-    200,  # Max pocet iteracii
+    500,  # Max pocet iteracii
     30,  # Max dlzka trvania v sek
 ]
 
@@ -37,10 +36,6 @@ if __name__ == "__main__":
     print("Tabu search[TABU]")
     hladanie = input()
     if hladanie.lower() == "ga":
-        # print("Zadajte metodu vyberu rodicov: ")
-        # print("[Ruleta], [Rank], [Turnaj]")
-        # metoda = input()
-
         riesenie_GA = GeneticAlgorithm(cities, genetic_algorithm_args)
         print_riesenie(riesenie_GA)
     elif hladanie.lower() == "sa":
@@ -49,4 +44,3 @@ if __name__ == "__main__":
     elif hladanie.lower() == "tabu":
         riesenie_TABU = TabuSearch(cities, tabu_search_args)
         print_riesenie(riesenie_TABU)
-    # tests.GA_testovanie(cities, genetic_algorithm_args)

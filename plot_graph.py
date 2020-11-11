@@ -66,7 +66,7 @@ def vytvor_video(uniq):
     video = input("Chcete vytvorit video? ffmpeg je potrebny: ")
     if video == "y":
         if len(uniq) > 40:
-            rychlost = 5  # je to skor rychlost spomalenia :D
+            rychlost = 3  # je to skor rychlost spomalenia :D
         else:
             rychlost = 8
         os.system(
