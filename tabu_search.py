@@ -5,7 +5,7 @@ from utils import fitness
 
 class TabuSearch(list):
     def __init__(self, cities, args):
-        print("TABU SEARCH...")
+        self.name = "TABU SEARCH..."
         self.parse_args(args)
         self.best_jedinci = []
         random.shuffle(cities)  # vygenerovanie nahodneho vektoru
@@ -51,7 +51,7 @@ class TabuSearch(list):
         return kandidat
 
     def stop(self, nevylepsil, start):
-        return nevylepsil == self.max_iteracii or timeit.default_timer() - start > self.max_tabu_size
+        return nevylepsil == self.max_iteracii or timeit.default_timer() - start > self.max_trvanie
 
     def parse_args(self, args):
         self.max_tabu_size = args[0]

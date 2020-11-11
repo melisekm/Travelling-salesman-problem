@@ -5,7 +5,7 @@ from utils import fitness
 
 class GeneticAlgorithm(list):
     def __init__(self, cities, args):
-        print("GENETIC ALGORITHM...")
+        self.name = "GENETIC ALGORITHM..."
         self.parse_args(args)  # spracuje argumenty
         self.best_jedinci = []  # zoznam pre vizualizaciu
         iteracia = 0
@@ -52,7 +52,7 @@ class GeneticAlgorithm(list):
             2: "Rank",
             3: "Turnaj",
         }
-        print(metoda[self.metoda_vyberu_rodica])
+        # self.rodic = metoda[self.metoda_vyberu_rodica]
 
 
 # Predstavuje Chromozom - vector navstivenia miest(genov)

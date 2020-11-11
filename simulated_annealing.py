@@ -7,7 +7,7 @@ from utils import fitness
 
 class SimulatedAnnealing(list):
     def __init__(self, cities, args):
-        print("SIMULATED ANNEALING...")
+        self.name = "SIMULATED ANNEALING..."
         self.parse_args(args)  # spracuje argumenty
         self.best_jedinci = []  # zoznam pre vizualizaciu
         init_time = timeit.default_timer()
