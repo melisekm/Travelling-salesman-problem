@@ -15,7 +15,7 @@ class TabuSearch(list):
         nevylepsil = 0
         init_time = timeit.default_timer()
         while not self.stop(nevylepsil, init_time):
-            nasledovnici = self.vygenerujNasledovnikov(najlepsi_kandidat)
+            nasledovnici = self.vygeneruj_nasledovnikov(najlepsi_kandidat)
             najlepsi_kandidat = self.najdi_najlepsieho_kandidata(nasledovnici, tabu_list)
 
             najlepsi_kandidat_fitness = fitness(najlepsi_kandidat)
@@ -23,7 +23,6 @@ class TabuSearch(list):
 
             if najlepsi_kandidat_fitness < globalne_max_fitness:
                 globalne_max = najlepsi_kandidat
-                self.best_jedinci.append(globalne_max)
                 nevylepsil = 0
 
             tabu_list.append(najlepsi_kandidat)
@@ -33,12 +32,12 @@ class TabuSearch(list):
         self.run_time = timeit.default_timer() - init_time
         list.__init__(self, globalne_max)
 
-    def vygenerujNasledovnikov(self, state):
-        rand = random.randint(0, len(state) - 1)
+    def vygeneruj_nasledovnikov(self, stav):
+        rand = random.randint(0, len(stav) - 1)
         nasledovnici = []
-        for i in range(0, len(state)):
+        for i in range(0, len(stav)):
             if i != rand:
-                nasledovnik = state.copy()
+                nasledovnik = stav.copy()
                 nasledovnik[i], nasledovnik[rand] = nasledovnik[rand], nasledovnik[i]
                 nasledovnici.append(nasledovnik)
         return nasledovnici

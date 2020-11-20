@@ -32,7 +32,7 @@ simulated_annealing_args = [
 
 if __name__ == "__main__":
     vstup = "berlin52"  # default20, wi29, att48, berlin52, manual
-    cities = parse_input("input/" + vstup + ".txt")
+    cities = parse_input("tests/" + vstup + ".txt")
     """
     print("Zvolte si metodu:")
     print("Geneticky algoritmus[GA]")

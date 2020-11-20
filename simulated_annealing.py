@@ -33,9 +33,9 @@ class SimulatedAnnealing(list):
         return Stav(dieta)
 
     def probabilita(self, delta, teplota):
-        probabilita = math.exp(delta / teplota)
+        sanca = math.exp(delta / teplota)
         rand = random.uniform(0, 1)
-        return True if probabilita >= rand else False
+        return True if sanca >= rand else False
 
     def stop(self, teplota, min_teplota, start):
         return teplota < min_teplota or timeit.default_timer() - start > self.max_trvanie
