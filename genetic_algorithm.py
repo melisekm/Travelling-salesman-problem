@@ -47,12 +47,6 @@ class GeneticAlgorithm(list):
         self.metoda_vyberu_rodica = args[5]
         self.max_iteracii = args[6]
         self.max_trvanie = args[7]
-        metoda = {
-            1: "Ruleta",
-            2: "Rank",
-            3: "Turnaj",
-        }
-        # self.rodic = metoda[self.metoda_vyberu_rodica]
 
 
 # Predstavuje Chromozom - vector navstivenia miest(genov)

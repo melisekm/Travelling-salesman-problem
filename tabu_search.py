@@ -9,8 +9,8 @@ class TabuSearch(list):
         self.parse_args(args)
         self.best_jedinci = []
         random.shuffle(cities)  # vygenerovanie nahodneho vektoru
-        globalne_max = cities  # sBest
-        najlepsi_kandidat = cities  # bestCandidate
+        globalne_max = cities
+        najlepsi_kandidat = cities
         tabu_list = [cities]
         nevylepsil = 0
         init_time = timeit.default_timer()
