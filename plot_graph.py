@@ -10,7 +10,7 @@ def run(best_jedinci):
         return
     uniq = vytried(best_jedinci)  # odstrani duplikaty na zaklade fitness
     zmaz_stare(uniq)  # sem len dlzka aby vedel kolko
-    vytvor_obrazky(uniq)  # tuto je tiez kopa custom veci
+    vytvor_obrazky([uniq[-1]])  # tuto je tiez kopa custom veci
     vytvor_video(uniq)  # pozor na nazov obrazkov a cestu k nim
 
 

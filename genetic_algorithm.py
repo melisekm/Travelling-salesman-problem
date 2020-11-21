@@ -5,18 +5,17 @@ from utils import fitness
 
 class GeneticAlgorithm(list):
     def __init__(self, cities, args):
-        print("GENETIC ALGORITHM...")
+        self.name = "GENETIC ALGORITHM..."
         self.parse_args(args)  # spracuje argumenty
-        self.best_jedinci = []  # zoznam pre vizualizaciu
         iteracia = 0
         init_time = timeit.default_timer()
-        generacia = random_generacia(cities, self.velkost_generacie)
+        generacia = random_generacia(cities, self.velkost_generacie)  # prva nahodna generacia
         generacia.sort(reverse=True)  # Najvyssia fittnes prva
+
         while not self.stop(iteracia, init_time):
             krizenie_generacia = Krizenie(generacia, self.pocet_krizeni, self.metoda_vyberu_rodica)
             mutacia_generacia = Mutacia(krizenie_generacia, self.pocet_mutacii, self.mutacia_probability)
             nahodna_generacia = random_generacia(cities, self.pocet_nahodnych)
-            self.best_jedinci.append(generacia[0])  # ukladame najlepsieho z generacie pre vizualizaciu
             generacia = self.vyber_najlepsich(
                 generacia,
                 krizenie_generacia,
@@ -25,6 +24,7 @@ class GeneticAlgorithm(list):
                 self.velkost_generacie,
             )
             iteracia += 1
+
         self.run_time = timeit.default_timer() - init_time
         list.__init__(self, generacia[0])  # vrati list of lists s najlepsim vysledkom
 
@@ -47,12 +47,6 @@ class GeneticAlgorithm(list):
         self.metoda_vyberu_rodica = args[5]
         self.max_iteracii = args[6]
         self.max_trvanie = args[7]
-        metoda = {
-            1: "Ruleta",
-            2: "Rank",
-            3: "Turnaj",
-        }
-        print(metoda[self.metoda_vyberu_rodica])
 
 
 # Predstavuje Chromozom - vector navstivenia miest(genov)
@@ -78,6 +72,7 @@ class Krizenie(list):
             deti.append(Jedinec(dieta))
         return deti
 
+    # dvojbodove krizenie
     def two_point_krizenie(self, rodicia):
         start, end = nahodny_usek(rodicia[0])  # nahodny usek da na korektne miesto
         tmp = [x for x in rodicia[1] if x not in rodicia[0][start:end]]  # odstrani dup
@@ -90,6 +85,7 @@ class Mutacia(list):
         self.mutacia_probability = mutacia_probability  # na kolko % budu deti mutovat
         list.__init__(self, self.mutacia(generacia, velkost))
 
+    # zmutuje prvok otocenim nahodneho useku v permutacii
     def mutacia(self, generacia, velkost):
         zmutovani = []
         for _ in range(velkost):
@@ -119,7 +115,7 @@ class VyberRodica(list):
         if self.metoda_vyberu_rodica == 3:
             return self.turnaj(generacia)
 
-    # na zaklade umernosti s fittness vyberie dvoch rodicov
+    # na zaklade umernosti s fittness vyberie rodica
     def ruleta(self, generacia):
         sucet_fitness = 0  # cela ruleta
         for jedinec in generacia:
@@ -135,6 +131,7 @@ class VyberRodica(list):
                     break
         return rodicia
 
+    # na zaklade umernosti s poradim, v ktorom sa nachadza vyberie rodica
     def rank_selection(self, generacia):
         sucet_fitness = (len(generacia) + 1) * len(generacia) / 2
         rodicia = []
@@ -148,6 +145,7 @@ class VyberRodica(list):
                     break
         return rodicia
 
+    # nahodne vyberie dvoch kandidatov a znich toho lepsieho
     def turnaj(self, generacia):
         n = len(generacia)
         rodicia = []
@@ -161,6 +159,7 @@ class VyberRodica(list):
         return rodicia
 
 
+# nahodne shufflovanie miest na mape
 def random_generacia(cities, velkost):
     generacia = []
     for _ in range(velkost):

@@ -5,17 +5,16 @@ from utils import fitness
 
 class TabuSearch(list):
     def __init__(self, cities, args):
-        print("TABU SEARCH...")
-        self.parse_args(args)
-        self.best_jedinci = []
+        self.name = "TABU SEARCH..."
+        self.parse_args(args)  # spracuj argumenty
         random.shuffle(cities)  # vygenerovanie nahodneho vektoru
-        globalne_max = cities  # sBest
-        najlepsi_kandidat = cities  # bestCandidate
-        tabu_list = [cities]
-        nevylepsil = 0
+        globalne_max = cities
+        najlepsi_kandidat = cities
+        tabu_list = [cities]  # Zoznam zakazanych stavov
+        nevylepsil = 0  # iteracia, po x nevylepseni stop
         init_time = timeit.default_timer()
         while not self.stop(nevylepsil, init_time):
-            nasledovnici = self.vygenerujNasledovnikov(najlepsi_kandidat)
+            nasledovnici = self.vygeneruj_nasledovnikov(najlepsi_kandidat)
             najlepsi_kandidat = self.najdi_najlepsieho_kandidata(nasledovnici, tabu_list)
 
             najlepsi_kandidat_fitness = fitness(najlepsi_kandidat)
@@ -23,7 +22,6 @@ class TabuSearch(list):
 
             if najlepsi_kandidat_fitness < globalne_max_fitness:
                 globalne_max = najlepsi_kandidat
-                self.best_jedinci.append(globalne_max)
                 nevylepsil = 0
 
             tabu_list.append(najlepsi_kandidat)
@@ -33,16 +31,18 @@ class TabuSearch(list):
         self.run_time = timeit.default_timer() - init_time
         list.__init__(self, globalne_max)
 
-    def vygenerujNasledovnikov(self, state):
-        rand = random.randint(0, len(state) - 1)
+    # vygeneruje max len(n) nasledovnikov vyberom nahodneho miesta vymeny so vsetkymi
+    def vygeneruj_nasledovnikov(self, stav):
+        rand = random.randint(0, len(stav) - 1)
         nasledovnici = []
-        for i in range(0, len(state)):
+        for i in range(0, len(stav)):
             if i != rand:
-                nasledovnik = state.copy()
+                nasledovnik = stav.copy()
                 nasledovnik[i], nasledovnik[rand] = nasledovnik[rand], nasledovnik[i]
                 nasledovnici.append(nasledovnik)
         return nasledovnici
 
+    # najlepsi stav zpomedzi nasledovnikov, ak sa nenachadza v tabu
     def najdi_najlepsieho_kandidata(self, nasledovnici, tabu_list):
         kandidat = nasledovnici[0]
         for nasledovnik in nasledovnici:
@@ -51,7 +51,7 @@ class TabuSearch(list):
         return kandidat
 
     def stop(self, nevylepsil, start):
-        return nevylepsil == self.max_iteracii or timeit.default_timer() - start > self.max_tabu_size
+        return nevylepsil == self.max_iteracii or timeit.default_timer() - start > self.max_trvanie
 
     def parse_args(self, args):
         self.max_tabu_size = args[0]
