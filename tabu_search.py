@@ -6,13 +6,12 @@ from utils import fitness
 class TabuSearch(list):
     def __init__(self, cities, args):
         self.name = "TABU SEARCH..."
-        self.parse_args(args)
-        self.best_jedinci = []
+        self.parse_args(args)  # spracuj argumenty
         random.shuffle(cities)  # vygenerovanie nahodneho vektoru
         globalne_max = cities
         najlepsi_kandidat = cities
-        tabu_list = [cities]
-        nevylepsil = 0
+        tabu_list = [cities]  # Zoznam zakazanych stavov
+        nevylepsil = 0  # iteracia, po x nevylepseni stop
         init_time = timeit.default_timer()
         while not self.stop(nevylepsil, init_time):
             nasledovnici = self.vygeneruj_nasledovnikov(najlepsi_kandidat)
@@ -32,6 +31,7 @@ class TabuSearch(list):
         self.run_time = timeit.default_timer() - init_time
         list.__init__(self, globalne_max)
 
+    # vygeneruje max len(n) nasledovnikov vyberom nahodneho miesta vymeny so vsetkymi
     def vygeneruj_nasledovnikov(self, stav):
         rand = random.randint(0, len(stav) - 1)
         nasledovnici = []
@@ -42,6 +42,7 @@ class TabuSearch(list):
                 nasledovnici.append(nasledovnik)
         return nasledovnici
 
+    # najlepsi stav zpomedzi nasledovnikov, ak sa nenachadza v tabu
     def najdi_najlepsieho_kandidata(self, nasledovnici, tabu_list):
         kandidat = nasledovnici[0]
         for nasledovnik in nasledovnici:

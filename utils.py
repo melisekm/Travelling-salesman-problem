@@ -1,5 +1,4 @@
 import math
-import plot_graph
 
 optimal = {
     "default20": 896,
@@ -13,6 +12,34 @@ class City:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+
+def load_input():
+    print("Koniec [q]")
+    print("Predvygenerovane: [default20] [wi29] [att48] [berlin52]")
+    print("alebo [vlastny] zo suboru tests - vlastny.txt")
+    vstup = input()
+    if vstup in ("default20", "wi29", "att48", "berlin52"):
+        path = "tests/" + vstup + ".txt"
+    elif vstup == "vlastny":
+        path = "tests/vlastny.txt"
+    elif vstup == "q":
+        print("Ukoncujem")
+        quit()
+    else:
+        return [None] * 3
+    cities = parse_input(path)
+    print(f"{path} nacitane. Pocet miest:{len(cities)}")
+    print("Zvolte si metodu:")
+    print("Geneticky algoritmus[GA]")
+    print("Simulovane zihanie[SA]")
+    print("Tabu search[TABU]")
+    print("Vsetky naraz [VSETKY]")
+    metoda = input()
+    if metoda.lower() not in ("ga", "sa", "tabu", "vsetky"):
+        return [None] * 3
+    print("Vykonavam...")
+    return vstup, cities, metoda
 
 
 def parse_input(path):
@@ -38,7 +65,7 @@ def euclidian_d(a, b):
 
 
 def print_riesenie(riesenie, vstup):
-    riesenie_cena = fitness(riesenie)
+    riesenie_cena = int(round(fitness(riesenie)))
     opt = vstup in optimal
     for mesto in riesenie:
         print(f"{round(mesto.x, 2)} \t {round(mesto.y, 2)}")
@@ -48,5 +75,3 @@ def print_riesenie(riesenie, vstup):
         print(f"Optimalne riesenie: {optimal.get(vstup)}")
         print(f"Presnost: {((optimal.get(vstup) / riesenie_cena) * 100):.3f}%")
     print(f"Hladanie bezalo: {riesenie.run_time}")
-
-    # plot_graph.run(riesenie.best_jedinci)
