@@ -446,6 +446,7 @@ Za 15 sekúnd sa vygenerovalo približne 4300 iterácií, a pri 52 mestách, to 
 |     100                     |     8640        |     12.65                    |
 |     500                     |     8411        |     13.94                    |
 |     4500                    |     9625        |     9.20                     |
+
 Obrovská veľkosť tabuľky smeruje k uviaznutiu v lokálnom extréme, a nižší počet navštívených stavov. Pri veľmi malých tabuľkách riešenie preskakuje medzi dvoma podobnými výsledkami. Zvoľme strednú veľkosť – 500 a vyskúšajme TABU na našich mapách
 
 |     Veľkosť   Tabu Listu    |     Výsledok    |     Posledné   vylepšenie    |
