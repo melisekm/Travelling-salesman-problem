@@ -330,6 +330,7 @@ Vypínacie podmienky upravujeme na základe veľkosti mapy, môže sa jednať o 
 ![](showcase/default20fitness.png)
 
 Všimnime si, že pri takejto menšej mape, keď sme spustili hľadanie na 1000 generácií, výsledok sme mali už po ~200 a zvyšné nepredstavovali žiadne vylepšenia, preto by bolo vhodné algoritmus ukončiť akonáhle po n generáciách nenájde vylepšenie.
+
 ![](showcase/zlepsenie.png)
 
 V prípade väčších máp, pokračuje zlepšovanie až do posledných 100 generácií 
@@ -372,9 +373,6 @@ Veľká generácia v tomto teste zvíťazila, tesne za ňou je stredná a malá 
 |     Ruleta                                 |     28145    |     35932    |     8082        |
 |     Rank   Selection                       |     29488    |     34740    |     8319        |
 |     Turnaj                                 |     28900    |     37343    |     8804        |
-|     Max. náhodných jedincov v generácií    |     2        |     4        |     8           |
-|     Pravdepodobnosť mutácie                |     20%      |     20%      |     20%         |
-|     Výsledok                               |     8274     |     8155     |     8097        |
 
 Ruleta sa ukázala ako najlepšia metóda výberu rodiča. Pri väčšej mape s veľkými vzdialenosťami bola porazená podobnou rank technikou, kde bolo vhodné nevyberať na základe veľkých rozdielov vo fitness, ale v ich postavení. Turnaj ako ďalší element náhody neprispel pri ani jednej mape.
 
@@ -464,7 +462,7 @@ V závere tejto práce dokážeme potvrdiť tvrdenia zo začiatku, nakoľko sa n
 Vykonanie celkového porovnania medzi uvedenými algoritmami je len ťažko možné odhadnúť, nakoľko všetky sú vhodné na iné požiadavky. Pomocou oficiálnych riešení sme porovnali výsledky a dospeli k záveru, že Simulované žíhanie svojou rýchlosťou a efektivitou vyniká na plnej čiare. Pokiaľ si zvolíme ako uspokojujúce riešenie, ktoré má chybovosť približne 10%, tak dokážeme využiť všetky algoritmy. Čím ideme nižšie tým viac času je potrebného na splnenie. Zložitosť riešenia sa odvíja aj od počtu miest na mape. Na veľkosti máp do 20 miest nám stačí maximálne 1-5 sekúnd, 50 miest - 15 sekúnd a takto to postupne stúpa, kde test s 200 mestami priniesol výsledok opäť s 10% chybou za 50-60 sekúnd. 
 Štruktúra, parametre a  metódy algoritmov zapadajú do kompromisu medzi zložitosťou implementácie a efektivity. Môžeme prehlásiť, že sa nám podarilo vykonať porovnania medzi parametrami algoritmov, vizualizovať výsledky a vývoj riešenia do grafov a tabuliek. Cesta k zložitejším riešeniam v ďalšom pokračovaní tohto alebo iného predmetu, či v praxi je otvorená.
 
-Zdroje:
+Zdroje:  
 [1] – Euclidian Distance  
 http://rosalind.info/glossary/euclidean-distance/  
 [2] – TSPLIB a Rounding   
