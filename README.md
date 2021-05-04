@@ -2,6 +2,8 @@
 
 ![](showcase/showcase.gif)
 
+![](showcase/usa.png)
+
 # Problém obchodného cestujúceho
 
 ## Úvod
