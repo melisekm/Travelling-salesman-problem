@@ -299,3 +299,179 @@ Metódy výberu rodičov – vždy vyberáme **dvoch** rodičov, ktorých skrí�
     Na úvod je vhodné povedať, že aj mapy rovnakej veľkosti s rovnakým rozmiestnením miest vo väčšine prípadov vrátia rôzne výsledky, ak zopakujeme vykonanie rovnaké algoritmu. Tento fakt nie je nijak prekvapivý, nakoľko vo všetkých algoritmoch je vsadená určitá vzorka cielenej informovanej náhody. Všade je prítomná a vždy ovplyvňuje výsledky testov. Občas sa stane, že výsledok je o niekoľko percent lepší resp. horší ako predchádzajúci rovnaký test. Nedávno sa k tejto téme vyjadril kolega z FIIT na diskusnom fóre Askalot a zhrnul to lepšie ako to dokážem ja a preto odkážem len na jeho príspevok.
 
     Testovací hardware: Windows 10 Home 64bit, i7-7700K @ 4.20GHz, 16GB RAM. Python 3.8.5 64bit.
+    
+| Názov súboru       | Popis                                  | Veľkosť   | Optimálne riešenie |
+|--------------------|----------------------------------------|-----------|--------------------|
+|     default20      |     Vzorová mapa zo zadania            |     20    |     896            |
+|     wi29[4]        |     Mestá v Afrike (Western Sahara)    |     29    |     27601          |
+|     att48[5]       |     Hlavné mestá štátov v USA          |     48    |     33522          |
+|     berlin52[2]    |     Lokality v Berlíne, Nemecko        |     52    |     7544           |
+
+Počty miest sa nemusia veľmi líšiť, ale medzi att48 a berlin52 je rozdiel v cene, jedna je na väčšej ploche a druhá na menšej, podobne aj pri 20 a 29. K týmto mapám poznáme optimálne riešenia[4][5] a preto dokážeme vyhodnotiť aj úspešnosť riešení, ktorá nie je až taká dôležitá ako rozdiely pri zmene argumentov, ale pomôže nám vidieť závislosti a porovnávať jednotlivé testy. Vo všetkých grafoch je na horizontálnej osy čas a na vertikálnej cena.
+Vypínacie podmienky upravujeme na základe veľkosti mapy, môže sa jednať o počet iterácií, dĺžka vykonávania alebo počet nevylepšení nájdeného maxima. 
+
+### Genetický algoritmus
+|     Veľkosť   generácie                      |     50     |
+|----------------------------------------------|------------|
+|     Max.   počet krížení                     |     32     |
+|     Max.   počet mutácií                     |     14     |
+|     Max.   náhodných jedincov v generácií    |     4      |
+|     Pravdepodobnosť   mutácie                |     20%    |
+
+|     Mapa         |     Výsledok    |     Čas (sec)    |
+|------------------|-----------------|------------------|
+|     default20    |     896         |     0.86         |
+|     wi29         |     29106       |     1.10         |
+|     att48        |     37010       |     2.04         |
+|     berlin52     |     8905        |     1.76         |
+
+![](showcase/default20.png)
+
+![](showcase/default20fitness.png)
+
+Všimnime si, že pri takejto menšej mape, keď sme spustili hľadanie na 1000 generácií, výsledok sme mali už po ~200 a zvyšné nepredstavovali žiadne vylepšenia, preto by bolo vhodné algoritmus ukončiť akonáhle po n generáciách nenájde vylepšenie.
+
+![](showcase/zlepsenie.png)
+
+V prípade väčších máp, pokračuje zlepšovanie až do posledných 100 generácií 
+Tu môžeme vidieť, že algoritmus začal na cene 
+157 048 a podarilo sa mu vylepšiť túto cestu o ~424%. Čo predstavuje asi 10% chybovosť.
+Ak by sme namiesto počtu iterácií nastavili stop podmienku natvrdo, na vypnutie po uplynutí x sekúnd, počet generácií by nás až tak nezaujímal a mohli by sme sledovať vývin najlepšej generácie bezohľadu na vylepšenie. Riešenie sa môže zlepšiť aj v poslednej sekunde hľadania a teda už nemusíme pokračovať ďalej, ale hľadanie vypneme. Táto skutočnosť nám pomôže regulovať náhodnosť pri testovaní, pretože všetky spustenia programu budú mať vyhradený rovnaký čas na nájdene výsledku. Ak sa algoritmus zasekne v lokálnom maxime tak mu to samozrejme nepomôže (rovnako pri menších mapách, ak nájde optimum), ale pri väčších, kde je potrebné preskúmať a vygenerovať viac susedov, dlhší čas evokuje vylepšenie úspešnosti.
+|     Mapa         |     Výsledok    |     Posledné vylepšenie    |
+|------------------|-----------------|----------------------------|
+|     default20    |     896         |     0.15                   |
+|     wi29         |     28470       |     0.28                   |
+|     att48        |     34770       |     3.81                   |
+|     berlin52     |     8493        |     3.54                   |
+
+![](showcase/berlin52fitness.png)
+
+### Ukončovacia podmienka
+
+Takýmto spôsobom by sme mohli pokračovať a zvyšovať ukončovaciu podmienku. Čím dlhší čas dáme algoritmom tým nájdu lepšie riešenie. Môžeme si všimnúť, že skoro všetky vylepšenia sa udiali takmer okamžite a posledné prišlo až po 5.5 sekundách bez vylepšenia. Toto potvrdzuje naše poslanie implementácie optimalizačných algoritmov a môžeme si všimnúť, že naozaj sa dokážu odtrhnúť od lokálneho maxima a pokračovať v hľadaní globálneho, ak im dáme dostatočne veľa času. Teraz môžeme vidieť, že podľa nami určenej očakávanej úspešnosti dokážeme korigovať a upravovať dĺžku vykonávania. Hodnota 8285 je približne 9% od optimálneho riešenia. 
+Nakoľko chceme aby náš algoritmus bol, čo najpresnejší stanovme ukončovaciu podmienku pre VŠETKY algoritmy a ich parametre na max 15sekúnd. Skúmať budeme len väčšie mapy a to najčastejšie berlin52.
+### Testovanie parametrov genetického algoritmu
+Vráťme sa k parametrom tvorenia populácie v genetickom algoritme. Stanovili sme si veľkosť jednej generácie na 50, max počet krížení na 32, čo predstavuje 64% skrížených jedincov v novej generácií. Toto si môžeme predstaviť ako 60% šancu na skríženie. Podobne mutácia max. 14 jedincov - 28% z celku a so šancou 20%, čo celkovo predstavuje 5% zmutovaných potomkov. Na záver 8% novej krvi. Skúsme zmeniť tieto čísla a sledovať výsledky. Zachovajme popritom percentuálne rozloženie.
+
+|     Parameter/ Veľkosť                     |     Malé    |     Stredné    |     Veľké    |     Obrovské    |
+|--------------------------------------------|-------------|----------------|--------------|-----------------|
+|     Veľkosť generácie                      |     20      |     50         |     100      |     500         |
+|     Max. počet krížení                     |     12      |     32         |     64       |     320         |
+|     Max. počet mutácií                     |     6       |     14         |     28       |     140         |
+|     Max. náhodných jedincov v generácií    |     2       |     4          |     8        |     40          |
+|     Pravdepodobnosť mutácie                |     20%     |     20%        |     20%      |     20%         |
+|     Výsledok                               |     8274    |     8155       |     8097     |     8236        |
+
+![](showcase/parametrepopulacie.png)
+
+Veľká generácia v tomto teste zvíťazila, tesne za ňou je stredná a malá & obrovská sú v pozadí. Hlavnou zásluhou na tomto výsledku je doba hľadania, veľká generácia je vhodnejšia pre dlhšie hľadanie, nakoľko stihne spracovať veľký počet veľkých generácií.
+
+### Výber rodiča
+Ďalším parametrom je výber technika výberu rodiča, naimplementované sú tri, tak ich poďme porovnať uprednostnime strednú hodnotu z predchádzajúcich testov a využime stredné veľkosti generácií na mapách wi29 a att48.
+|     Názov                                  |     wi29     |     att48    |     berlin52    |
+|--------------------------------------------|--------------|--------------|-----------------|
+|     Ruleta                                 |     28145    |     35932    |     8082        |
+|     Rank   Selection                       |     29488    |     34740    |     8319        |
+|     Turnaj                                 |     28900    |     37343    |     8804        |
+
+Ruleta sa ukázala ako najlepšia metóda výberu rodiča. Pri väčšej mape s veľkými vzdialenosťami bola porazená podobnou rank technikou, kde bolo vhodné nevyberať na základe veľkých rozdielov vo fitness, ale v ich postavení. Turnaj ako ďalší element náhody neprispel pri ani jednej mape.
+
+### Pravdepodobnosť mutácie
+
+|     Pravdepodobnosť    |     wi29     |     att48    |     berlin52    |
+|------------------------|--------------|--------------|-----------------|
+|     0%                 |     34397    |     57447    |     13597       |
+|     20%                |     28042    |     34866    |     8054        |
+|     100%               |     30052    |     36851    |     8681        |
+
+Bez operácie mutácia, riešenia veľmi rýchlo uviazli na lokálnom maxime a nepodarilo sa im z nich dostať. Ak sme do algoritmu pridali mutáciu výsledky sa začali zlepšovať, ale ak sme dali priveľkú, tak riešenie nadobudlo prvky náhodného skúšania rôznych permutácií. Môžeme si všimnúť, že aj keď mutácia bola nastavená na 100%, tak sa výsledky nelíšia o značnú hodnotu. V našom algoritme aj v prípade, že nastavíme mutáciu pre každý chromozóm, vytvorí sa nám len určité percento nových zmutovaných potomkov a celkovo to zásadne neovplyvní finálny výsledok.
+
+### Simulované žíhanie
+
+| Rýchlosť ochladenia | 0.00005   |
+|---------------------|-----------|
+| Minimálna teplota   | 1 * 10^-8 |
+| Počiatočná teplota  | 1 * 10^-6 |
+
+Na začiatok je potrebné povedať, že implementácia tohto riešenia sa môže líšiť od učebnicových pseudokódov, ale toto je jediný algoritmus, pomocou ktorého sa mi podarilo nájsť v rekordnom čase OPTIMÁLNE RIEŠENIE, ku všetkým 4 testovaným mapám!
+
+![](showcase/SAPerfect.png)
+
+Krásne vidíme ako riešenie prekonáva lokálne extrémy, dáva priestor horším riešeniam až nájde globálne minimum. Tieto výsledky nie je možné prekonať pomocou akýchkoľvek iných parametrov v tejto implementácii. Výsledok bol už na svete po ~1 sekunde. Zaokrúhlené
+
+![](showcase/berlin52optimal.png)
+
+![](showcase/berlin52my.png)
+
+|     Mapa         |     Výsledok    |     Čas (sec)    |
+|------------------|-----------------|------------------|
+|     default20    |     896         |     1,35         |
+|     wi29         |     27601       |     1.84         |
+|     att48        |     33784       |     2.77         |
+|     berlin52     |     7544        |     2.82         |
+
+Priblížme si dopad zmien na výsledky riešenia.
+Vysoká počiatočná teplota – akákoľvek hodnota od 1 po 50.. Dĺžka riešenia sa predĺži na približne 15 sekúnd a výsledok je ešte stále dobrý max ~5% chyba.
+
+![](showcase/vysoka_pociatocna.png)
+
+Riešenie dlhú dobu prekračuje okolo rovnako zlého bodu a nekonverguje k výsledku. Stále dookola sa akceptujú horšie riešenia a nedarí sa ho vylepšiť. Neskôr keď sa teplota ochladí na veľmi nízke hodnoty, riešenie sa výrazne zlepší.
+
+Vysoká rýchlosť ochladenia – 0.05
+Riešenie začne konvergovať, ale keďže chladíme priveľmi rýchlo nestihne sa dopracovať k lepším výsledkom, nestihne prezrieť viacero susedov a skončí veľmi rýchlo.
+Tu je konkrétne vidieť, že vôbec nezáleží na tom akú počiatočnú teplotu zvolíme
+
+Nízka rýchlosť ochladenia – 0.0000005 – Doba riešenia sa natiahne na neporovnateľnú časovú hodnotu oproti predchádzajúcim riešeniam. Explicitne sa hľadanie vyplo po 120 sekundách a vrátilo ~7548. Pričom minimálne minútu prešľapovalo na hodnotách od 7644-7900. Čo opäť len potvrdzuje funkčnosť optimalizačného algoritmu. Do textového súboru sa zapísalo 3.5M riadkov a bohužiaľ sa nedal vygenerovať ani graf.
+Posledným parametrom je minimálna teplota. Na zvýšenie minimálnej teploty musíme zvýšiť aj maximálnu teplotu, klesanie nechajme rovnaké.
+
+Riešenie vôbec nepripustí lepšie riešenia a ostane preskakovať na rovnakom  zlom lokálnom maxime.
+Poznámka: Pokiaľ neudáme veľmi nízku hodnotu klesania teploty, vždy by sme mali nechať algoritmus dobehnúť pretože tie lepšie riešenia sa ukážu vždy až na konci
+
+### Tabu Search
+Posledným testovaným algoritmom bolo zakázané hľadanie. Paradoxne, vzhľadom na nízky počet parametrov, pri tomto poslednom riešení vznikalo najviac otáznikov ohľadne výberu metód a techník implementovaných pri generovaní resp. vyberaní susedov a celkovo k efektivite tohto algoritmu.
+Jediným parametrom, okrem ukončovacej podmienky, je veľkosť tabu listu. Na dosiahnutie výsledkov porovnateľných s inými algoritmami udávajme ukončovaciu podmienku len na základe času vykonávania. Testy spúšťame vždy s maximálnou dĺžkou trvania rovnou 15s. 
+
+![](showcase/tabu_search.png)
+
+Riešenie rýchlo eliminuje tie najhoršie permutácie a postupne začne klesať. Skúša aj horšie možnosti, pretože postupne „zabúda“ na nájdené lokálne minimá a snaží sa od nich odlepiť. Ak sa pozrieme bližšie na tento graf, uvidíme, že každých 500 iterácií(veľkosť tabu listu) si algoritmus zvolí oveľa horšiu permutáciu. Taktiež do tretice aj pri tomto algoritme pozorujeme, fakt, že dokáže vylepšovať riešenia až do posledných sekúnd vykonávania. 
+Jeden z príkladov postupného zabúdania, približne po 500 iteráciách sa vybrali horšie riešenia, ktoré sa potom optimalizovali smerom nadol. 
+Za 15 sekúnd sa vygenerovalo približne 4300 iterácií, a pri 52 mestách, to je ~223 600 stavov.
+Čím bude tabuľka väčšia tým dlhšie sa v nej bude hľadať a prestane byť účinná → riešenie spadne do lokálneho minima a nedokáže sa z neho dostať, nakoľko prehľadá len menšie množstvo stavov.
+
+![](showcase/tabu_search2.png)
+
+|     Veľkosť   Tabu Listu    |     Výsledok    |     Posledné   vylepšenie    |
+|-----------------------------|-----------------|------------------------------|
+|     50                      |     9125        |     11.58                    |
+|     100                     |     8640        |     12.65                    |
+|     500                     |     8411        |     13.94                    |
+|     4500                    |     9625        |     9.20                     |
+
+Obrovská veľkosť tabuľky smeruje k uviaznutiu v lokálnom extréme, a nižší počet navštívených stavov. Pri veľmi malých tabuľkách riešenie preskakuje medzi dvoma podobnými výsledkami. Zvoľme strednú veľkosť – 500 a vyskúšajme TABU na našich mapách
+
+|     Veľkosť   Tabu Listu    |     Výsledok    |     Posledné   vylepšenie    |
+|-----------------------------|-----------------|------------------------------|
+|     50                      |     9125        |     11.58                    |
+|     100                     |     8640        |     12.65                    |
+|     500                     |     8411        |     13.94                    |
+|     4500                    |     9625        |     9.20                     |
+
+Celkovo všetky priemerné výsledky s veľkosťou tabu listu 100-1000 sú v vzdialenosti asi 15% od optimálneho riešenia. Čím dlhší čas dáme algoritmu tým nájde lepšie riešenie. Vidíme, že pre malé mapy aj keď po niekoľkých pokusoch, dokáže nájsť optimálne riešenie.
+## Záver a zhodnotenie
+
+V závere tejto práce dokážeme potvrdiť tvrdenia zo začiatku, nakoľko sa nám podarilo splniť cieľ projektu a teda naprogramovať funkčné optimalizačné algoritmy, ktoré dostanú na vstupe mapu miest a vrátia uspokojujúce riešenie v krátkom čase. Všetky algoritmy postupne vylepšujú doposiaľ nájdené riešenie a ak im je daný dosť veľký časový úsek, tým lepší bude výsledok. Správnou konfiguráciou a nastavením parametrov pre jednotlivé algoritmy sme zdokumentovali tvrdenie, že každý problém je unikátny a všetky metódy potrebujú prispôsobené parametre pre nájdenie, čo najlepšieho výsledku. 
+Vykonanie celkového porovnania medzi uvedenými algoritmami je len ťažko možné odhadnúť, nakoľko všetky sú vhodné na iné požiadavky. Pomocou oficiálnych riešení sme porovnali výsledky a dospeli k záveru, že Simulované žíhanie svojou rýchlosťou a efektivitou vyniká na plnej čiare. Pokiaľ si zvolíme ako uspokojujúce riešenie, ktoré má chybovosť približne 10%, tak dokážeme využiť všetky algoritmy. Čím ideme nižšie tým viac času je potrebného na splnenie. Zložitosť riešenia sa odvíja aj od počtu miest na mape. Na veľkosti máp do 20 miest nám stačí maximálne 1-5 sekúnd, 50 miest - 15 sekúnd a takto to postupne stúpa, kde test s 200 mestami priniesol výsledok opäť s 10% chybou za 50-60 sekúnd. 
+Štruktúra, parametre a  metódy algoritmov zapadajú do kompromisu medzi zložitosťou implementácie a efektivity. Môžeme prehlásiť, že sa nám podarilo vykonať porovnania medzi parametrami algoritmov, vizualizovať výsledky a vývoj riešenia do grafov a tabuliek. Cesta k zložitejším riešeniam v ďalšom pokračovaní tohto alebo iného predmetu, či v praxi je otvorená.
+
+Zdroje:  
+[1] – Euclidian Distance  
+http://rosalind.info/glossary/euclidean-distance/  
+[2] – TSPLIB a Rounding   
+http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/TSPFAQ.html  
+[3] - Kolahan, Farhad & TAVAKOLI, AHMAD & TAJDIN, BEHRANG & HOSAYNI, MODJTABA. (2006). Analysis of neighborhood generation and move selection strategies on the performance of Tabu Search.  
+https://www.researchgate.net/publication/255599657_Analysis_of_neighborhood_generation_and_move_selection_strategies_on_the_performance_of_Tabu_Search  
+[4] – National Traveling Salesman Problem Datasets http://www.math.uwaterloo.ca/tsp/world/countries.html  
+[5] – Burkardt, John. Department of Scientific Computing, Florida State University. TSP Data sets. https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html   
+[6] - Otman, Abdoun & Tajani, Chakir & Abouchabka, Jaafar. (2012).Application to Travelling Salesman Problem. International Journal of Computer Science Issues. 9.  
+https://www.researchgate.net/figure/The-optimal-solution-of-Berlin52_fig2_221901574  
+Kreslenie diagramov – draw.io   
